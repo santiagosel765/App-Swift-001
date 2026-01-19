@@ -67,13 +67,18 @@ struct SecondaryButton: View {
                     .font(.system(size: 16, weight: .medium))
 
                 Text(title)
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 16, weight: .semibold))
             }
-            .foregroundColor(.blue)
+            .foregroundStyle(.blue)
             .frame(maxWidth: .infinity)
             .frame(height: 48)
-            .background(Color.blue.opacity(0.1))
-            .cornerRadius(12)
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(.blue.opacity(0.3), lineWidth: 1)
+            )
+            .shadow(color: Color.blue.opacity(0.15), radius: 4, x: 0, y: 2)
         }
         .accessibilityLabel(title)
     }

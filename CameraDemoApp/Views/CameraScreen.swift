@@ -12,60 +12,69 @@ struct CameraScreen: View {
     @StateObject private var viewModel = CameraViewModel()
 
     var body: some View {
-        ZStack {
-            // Background gradient
-            LinearGradient(
-                colors: [
-                    Color(red: 0.95, green: 0.96, blue: 0.98),
-                    Color(red: 0.98, green: 0.98, blue: 1.0)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+        NavigationStack {
+            ZStack {
+                // Background gradient - más profundidad y contraste
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.92, green: 0.93, blue: 0.96),
+                        Color(red: 0.96, green: 0.97, blue: 0.99)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
 
-            VStack(spacing: 24) {
-                // Header
-                VStack(spacing: 8) {
-                    Text("Captura de Cámara")
-                        .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(.primary)
+                VStack(spacing: 24) {
+                    // Header mejorado con card de material
+                    VStack(spacing: 8) {
+                        Text("Captura de Cámara")
+                            .font(.system(size: 28, weight: .bold))
+                            .foregroundStyle(.primary)
 
-                    Text("Toma una foto y visualízala")
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundColor(.secondary)
+                        Text("Toma una foto y visualízala")
+                            .font(.system(size: 15, weight: .regular))
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
+                    .padding(.horizontal, 20)
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 4)
+
+                    Spacer()
+
+                    // Image preview or empty state
+                    if let image = viewModel.image {
+                        imagePreview(image)
+                    } else {
+                        emptyState
+                    }
+
+                    Spacer()
+
+                    // Action buttons
+                    actionButtons
+                        .padding(.bottom, 32)
                 }
-                .padding(.top, 40)
-
-                Spacer()
-
-                // Image preview or empty state
-                if let image = viewModel.image {
-                    imagePreview(image)
-                } else {
-                    emptyState
-                }
-
-                Spacer()
-
-                // Action buttons
-                actionButtons
-                    .padding(.bottom, 32)
+                .padding(.horizontal, 24)
+                .padding(.top, 16)
             }
-            .padding(.horizontal, 24)
-        }
-        .sheet(isPresented: $viewModel.showCameraPicker, onDismiss: {
-            viewModel.onCameraPickerDismissed()
-        }) {
-            CameraPicker(
-                image: $viewModel.image,
-                onError: { error in
-                    viewModel.handleCameraError(error)
-                }
-            )
-        }
-        .alert(item: $viewModel.alert) { alertModel in
-            createAlert(from: alertModel)
+            .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $viewModel.showCameraPicker, onDismiss: {
+                viewModel.onCameraPickerDismissed()
+            }) {
+                CameraPicker(
+                    image: $viewModel.image,
+                    onError: { error in
+                        viewModel.handleCameraError(error)
+                    }
+                )
+            }
+            .alert(item: $viewModel.alert) { alertModel in
+                createAlert(from: alertModel)
+            }
         }
     }
 
@@ -75,24 +84,22 @@ struct CameraScreen: View {
         VStack(spacing: 16) {
             Image(systemName: "camera.fill")
                 .font(.system(size: 80))
-                .foregroundColor(.blue.opacity(0.3))
+                .foregroundStyle(.blue.gradient)
 
             Text("No hay foto capturada")
-                .font(.system(size: 18, weight: .medium))
-                .foregroundColor(.secondary)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(.primary)
 
             Text("Presiona el botón para tomar una foto")
-                .font(.system(size: 14))
-                .foregroundColor(.secondary.opacity(0.8))
+                .font(.system(size: 14, weight: .regular))
+                .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
         .frame(height: 400)
-        .background(
-            RoundedRectangle(cornerRadius: 24)
-                .fill(Color.white)
-                .shadow(color: Color.black.opacity(0.05), radius: 12, x: 0, y: 4)
-        )
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 24))
+        .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
         .accessibilityLabel("Estado vacío - No hay foto capturada")
     }
 
@@ -105,9 +112,9 @@ struct CameraScreen: View {
             .clipShape(RoundedRectangle(cornerRadius: 24))
             .overlay(
                 RoundedRectangle(cornerRadius: 24)
-                    .stroke(Color.blue.opacity(0.2), lineWidth: 2)
+                    .strokeBorder(.secondary.opacity(0.25), lineWidth: 2)
             )
-            .shadow(color: Color.black.opacity(0.1), radius: 16, x: 0, y: 8)
+            .shadow(color: Color.black.opacity(0.12), radius: 16, x: 0, y: 8)
             .accessibilityLabel("Foto capturada")
     }
 
